@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Cryptocurrency {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name   String         @unique
+  amount Float
+  prices PriceHistory[]
+}
+
+model PriceHistory {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cryptoId   Int
+  date       DateTime
+  priceInEur String // Defines the price in EUR as a string. This is to circumvent a bug related to floating point representation of the value.
+
+
+  cryptocurrency Cryptocurrency   @relation(fields: [cryptoId], references: [id], onDelete: Cascade)
+}
+
+model StandardDeviation {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  date  DateTime @default(now())
+  count Int   
+  mean  Float 
+  m2    Float 
+
+  standardDeviation Float?
+}
